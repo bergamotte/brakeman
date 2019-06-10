@@ -469,7 +469,13 @@ module Brakeman::Util
   def template_path_to_name path
     names = path.split("/")
     names.last.gsub!(/(\.(html|js)\..*|\.(rhtml|haml|erb|slim))$/, '')
-    names[(names.index("views") + 1)..-1].join("/").to_sym
+    if path.absolute.include? "views"
+      names[(names.index("views") + 1)..-1].join("/").to_sym
+    elsif path.absolute.include? "components"
+      names[(names.index("components") + 1)..-1].join("/").to_sym
+    else
+      raise "I don't know how to name #{path}"
+    end
   end
 
   def github_url file, line=nil
